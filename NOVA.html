@@ -1,0 +1,2328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OLYMPUS | Divine Experience</title>
+    <style>
+        /* Base Styles */
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Montserrat:wght@300;400;600;800&display=swap');
+        
+        :root {
+            --gold: #D4AF37;
+            --gold-light: rgba(212, 175, 55, 0.2);
+            --marble: #f5f5f5;
+            --marble-dark: #e0e0e0;
+            --night: #0d1b2a;
+            --ocean: #1b263b;
+            --celestial: #1a2639;
+            --text: #333;
+            --text-light: #f5f5f5;
+            --shadow: rgba(0, 0, 0, 0.2);
+            --transition-slow: 0.7s cubic-bezier(0.77, 0, 0.175, 1);
+            --transition-medium: 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+            --transition-fast: 0.3s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: none;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+            overflow-x: hidden;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--text);
+            background-color: var(--night);
+            overflow-x: hidden;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+        }
+
+        .split-text {
+            overflow: hidden;
+            position: relative;
+        }
+
+        .split-text span {
+            display: inline-block;
+            transform: translateY(100%);
+            transition: transform var(--transition-medium);
+        }
+
+        .visible .split-text span {
+            transform: translateY(0);
+        }
+
+        /* Custom Cursor */
+        .cursor {
+            position: fixed;
+            width: 12px;
+            height: 12px;
+            background-color: var(--gold);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s, background-color 0.3s;
+            mix-blend-mode: difference;
+        }
+
+        .cursor-follower {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--gold);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            transform: translate(-50%, -50%);
+            transition: transform 0.15s, width 0.3s, height 0.3s, border 0.3s;
+            mix-blend-mode: difference;
+        }
+
+        .cursor-grow {
+            transform: scale(2.5);
+            background-color: rgba(212, 175, 55, 0.5);
+            mix-blend-mode: normal;
+        }
+
+        .follower-grow {
+            transform: translate(-50%, -50%) scale(0.5);
+            border-color: transparent;
+        }
+
+        /* Loader */
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--night);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 1s ease, visibility 1s ease;
+        }
+
+        .loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loader-title {
+            font-family: 'Cinzel', serif;
+            font-size: 5rem;
+            font-weight: 900;
+            color: var(--gold);
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .loader-title span {
+            display: inline-block;
+            transform: translateY(100%);
+            opacity: 0;
+            animation: titleReveal 1.5s cubic-bezier(0.77, 0, 0.175, 1) forwards;
+        }
+
+        @keyframes titleReveal {
+            0% {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .loader-bar-container {
+            width: 300px;
+            height: 2px;
+            background-color: rgba(212, 175, 55, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .loader-bar {
+            height: 100%;
+            width: 0;
+            background-color: var(--gold);
+            transition: width 0.5s ease;
+        }
+
+        .loader-percentage {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+            color: var(--gold);
+            margin-top: 1rem;
+        }
+
+        /* Navigation */
+        .nav-toggle {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            background-color: rgba(13, 27, 42, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 50%;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+
+        .nav-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        .nav-toggle-lines {
+            width: 30px;
+            height: 20px;
+            position: relative;
+            transition: transform 0.5s ease;
+        }
+
+        .nav-toggle-lines span {
+            display: block;
+            position: absolute;
+            height: 2px;
+            width: 100%;
+            background-color: var(--gold);
+            transition: all 0.3s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+
+        .nav-toggle-lines span:nth-child(1) {
+            top: 0;
+        }
+
+        .nav-toggle-lines span:nth-child(2) {
+            top: 9px;
+        }
+
+        .nav-toggle-lines span:nth-child(3) {
+            top: 18px;
+        }
+
+        .nav-active .nav-toggle-lines span:nth-child(1) {
+            transform: translateY(9px) rotate(45deg);
+        }
+
+        .nav-active .nav-toggle-lines span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .nav-active .nav-toggle-lines span:nth-child(3) {
+            transform: translateY(-9px) rotate(-45deg);
+        }
+
+        .fullscreen-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--night);
+            z-index: 999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+
+        .nav-active .fullscreen-nav {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .nav-links {
+            list-style: none;
+            text-align: center;
+        }
+
+        .nav-links li {
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .nav-links li a {
+            font-family: 'Cinzel', serif;
+            font-size: 3.5rem;
+            color: var(--text-light);
+            text-decoration: none;
+            position: relative;
+            display: inline-block;
+            transform: translateY(100%);
+            transition: transform 0.5s cubic-bezier(0.77, 0, 0.175, 1), color 0.3s ease;
+        }
+
+        .nav-active .nav-links li a {
+            transform: translateY(0);
+        }
+
+        .nav-links li a:hover {
+            color: var(--gold);
+        }
+
+        .nav-links li a::before {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            color: var(--gold);
+            overflow: hidden;
+            width: 0;
+            transition: width 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+            white-space: nowrap;
+        }
+
+        .nav-links li a:hover::before {
+            width: 100%;
+        }
+
+        .nav-socials {
+            position: absolute;
+            bottom: 2rem;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+        }
+
+        .nav-social-link {
+            color: var(--text-light);
+            font-size: 1.5rem;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+
+        .nav-social-link:hover {
+            color: var(--gold);
+            transform: translateY(-5px);
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--night);
+        }
+
+        #hero-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .hero-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0 8rem;
+            z-index: 1;
+        }
+
+        .hero-subtitle {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            color: var(--gold);
+            margin-bottom: 1rem;
+            overflow: hidden;
+        }
+
+        .hero-title {
+            font-size: 8rem;
+            margin-bottom: 2rem;
+            color: var(--text-light);
+            line-height: 1;
+            mix-blend-mode: difference;
+        }
+
+        .hero-text {
+            max-width: 600px;
+            font-size: 1.2rem;
+            color: var(--text-light);
+            margin-bottom: 3rem;
+            overflow: hidden;
+        }
+
+        .hero-button {
+            display: inline-block;
+            padding: 1.2rem 3rem;
+            background: transparent;
+            border: 2px solid var(--gold);
+            color: var(--gold);
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-decoration: none;
+            overflow: hidden;
+            position: relative;
+            transition: color 0.5s ease;
+        }
+
+        .hero-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background-color: var(--gold);
+            z-index: -1;
+            transition: width 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+
+        .hero-button:hover {
+            color: var(--night);
+        }
+
+        .hero-button:hover::before {
+            width: 100%;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 2;
+        }
+
+        .scroll-text {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--gold);
+            margin-bottom: 1rem;
+        }
+
+        .scroll-line {
+            width: 2px;
+            height: 60px;
+            background-color: var(--gold);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .scroll-line::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--text-light);
+            animation: scrollDown 1.5s ease-in-out infinite;
+        }
+
+        @keyframes scrollDown {
+            0% {
+                transform: translateY(-100%);
+            }
+            100% {
+                transform: translateY(100%);
+            }
+        }
+
+        /* Gods Section */
+        .section {
+            padding: 10rem 0;
+            position: relative;
+        }
+
+        .section-inner {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .section-header {
+            margin-bottom: 8rem;
+            position: relative;
+        }
+
+        .section-number {
+            font-family: 'Cinzel', serif;
+            font-size: 10rem;
+            font-weight: 900;
+            color: rgba(212, 175, 55, 0.1);
+            position: absolute;
+            top: -8rem;
+            left: -2rem;
+            z-index: -1;
+        }
+
+        .section-title {
+            font-size: 5rem;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .section-title span {
+            display: inline-block;
+            transform: translateY(100%);
+            transition: transform 1s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+
+        .visible .section-title span {
+            transform: translateY(0);
+        }
+
+        .section-subtitle {
+            font-size: 1.2rem;
+            max-width: 600px;
+            color: var(--gold);
+            overflow: hidden;
+        }
+
+        .gods-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4rem;
+        }
+
+        .god-card {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .god-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(13, 27, 42, 0.5);
+            z-index: 1;
+            opacity: 0;
+            transition: opacity var(--transition-medium);
+        }
+
+        .god-card:hover::before {
+            opacity: 1;
+        }
+
+        .god-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 1s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+
+        .god-card:hover .god-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .god-card-front,
+        .god-card-back {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+        }
+
+        .god-card-front {
+            background-color: var(--celestial);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transform: rotateY(0deg);
+        }
+
+        .god-card-back {
+            background: linear-gradient(135deg, var(--night), var(--celestial));
+            transform: rotateY(180deg);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .god-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.7s cubic-bezier(0.77, 0, 0.175, 1);
+            opacity: 0.7;
+        }
+
+        .god-card:hover .god-image {
+            transform: scale(1.1);
+        }
+
+        .god-symbol {
+            font-size: 5rem;
+            color: var(--gold);
+            margin-bottom: 1rem;
+        }
+
+        .god-name {
+            font-family: 'Cinzel', serif;
+            font-size: 2.5rem;
+            color: var(--gold);
+            margin-bottom: 1rem;
+        }
+
+        .god-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+        }
+
+        .god-description {
+            color: var(--text-light);
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        /* Myth Section */
+        .myths-section {
+            background-color: var(--celestial);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .myths-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('/api/placeholder/1920/1080');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.1;
+            mix-blend-mode: luminosity;
+        }
+
+        .myths-slider {
+            width: 100%;
+            position: relative;
+        }
+
+        .myths-track {
+            display: flex;
+            transition: transform 1s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+
+        .myth-slide {
+            flex: 0 0 100%;
+            padding: 0 2rem;
+        }
+
+        .myth-content {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .myth-number {
+            font-family: 'Cinzel', serif;
+            font-size: 12rem;
+            font-weight: 900;
+            color: rgba(212, 175, 55, 0.2);
+            position: absolute;
+            top: -8rem;
+            left: -4rem;
+            z-index: -1;
+        }
+
+        .myth-title {
+            font-size: 3.5rem;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+        }
+
+        .myth-text {
+            color: var(--text-light);
+            font-size: 1.2rem;
+            line-height: 1.8;
+            margin-bottom: 3rem;
+        }
+
+        .myth-image-container {
+            width: 100%;
+            height: 400px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 3rem;
+        }
+
+        .myth-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scale(1.1);
+            transition: transform 1s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+
+        .visible .myth-image {
+            transform: scale(1);
+        }
+
+        .myths-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 4rem;
+        }
+
+        .myth-nav-button {
+            background: transparent;
+            border: none;
+            color: var(--gold);
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            transition: color 0.3s ease;
+        }
+
+        .myth-nav-button:hover {
+            color: var(--text-light);
+        }
+
+        .myth-nav-button svg {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+        }
+
+        .myth-nav-prev svg {
+            margin-right: 1rem;
+        }
+
+        .myth-nav-next svg {
+            margin-left: 1rem;
+        }
+
+        .myth-pagination {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 3rem;
+        }
+
+        .myth-pagination-bullet {
+            width: 40px;
+            height: 3px;
+            background-color: rgba(212, 175, 55, 0.3);
+            transition: background-color 0.3s ease, width 0.3s ease;
+            cursor: pointer;
+        }
+
+        .myth-pagination-bullet.active {
+            background-color: var(--gold);
+            width: 80px;
+        }
+
+        /* Oracle Section */
+        .oracle-section {
+            background-color: var(--night);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .oracle-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background-color: var(--gold);
+            border-radius: 50%;
+            opacity: 0.5;
+        }
+
+        .oracle-container {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .oracle-circle {
+            width: 300px;
+            height: 300px;
+            border: 2px solid var(--gold);
+            border-radius: 50%;
+            margin: 0 auto 4rem;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .oracle-circle::before,
+        .oracle-circle::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+        }
+
+        .oracle-circle::before {
+            width: 280px;
+            height: 280px;
+            border: 1px solid var(--gold-light);
+        }
+
+        .oracle-circle::after {
+            width: 260px;
+            height: 260px;
+            border: 1px solid var(--gold-light);
+        }
+
+        .oracle-eye {
+            width: 100px;
+            height: 100px;
+            background-color: var(--gold);
+            border-radius: 50%;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 30px var(--gold);
+        }
+
+        .oracle-eye::before {
+            content: '';
+            width: 40px;
+            height: 40px;
+            background-color: var(--night);
+            border-radius: 50%;
+        }
+
+        .oracle-form {
+            position: relative;
+            margin-top: 4rem;
+        }
+
+        .oracle-input {
+            width: 100%;
+            padding: 1.5rem 2rem;
+            background-color: transparent;
+            border: none;
+            border-bottom: 2px solid var(--gold-light);
+            color: var(--text-light);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.2rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .oracle-input:focus {
+            outline: none;
+            border-color: var(--gold);
+        }
+
+        .oracle-input::placeholder {
+            color: rgba(245, 245, 245, 0.5);
+        }
+
+        .oracle-submit {
+            position: absolute;
+            right: 0;
+            bottom: 1.5rem;
+            background: transparent;
+            border: none;
+            color: var(--gold);
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .oracle-submit:hover {
+            color: var(--text-light);
+        }
+
+        .oracle-response {
+            margin-top: 4rem;
+            text-align: center;
+            height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .oracle-response.active {
+            animation: oracleReveal 2s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+
+        @keyframes oracleReveal {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .oracle-response-text {
+            font-family: 'Cinzel', serif;
+            font-size: 1.8rem;
+            color: var(--text-light);
+            margin-bottom: 1rem;
+            max-width: 700px;
+        }
+
+        .oracle-response-author {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+            color: var(--gold);
+            font-style: italic;
+        }
+
+        /* Artifacts Section */
+        .artifacts-section {
+            background: linear-gradient(to bottom, var(--night), var(--celestial));
+            position: relative;
+            overflow: hidden;
+        }
+
+        .artifacts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 4rem;
+            margin-top: 4rem;
+        }
+
+        .artifact-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 5px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            aspect-ratio: 1;
+            cursor: pointer;
+        }
+
+        .artifact-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.7s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+
+        .artifact-item:hover .artifact-image {
+            transform: scale(1.1);
+        }
+
+        .artifact-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top, rgba(13, 27, 42, 0.9), rgba(13, 27, 42, 0.5), transparent);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 2rem;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .artifact-item:hover .artifact-overlay {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .artifact-name {
+            font-family: 'Cinzel', serif;
+            font-size: 2rem;
+            color: var(--gold);
+            margin-bottom: 0.5rem;
+        }
+
+        .artifact-description {
+            color: var(--text-light);
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .artifact-link {
+            align-self: flex-start;
+            color: var(--gold);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-decoration: none;
+            position: relative;
+        }
+
+        .artifact-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background-color: var(--gold);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+
+        .artifact-item:hover .artifact-link::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(13, 27, 42, 0.95);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            max-width: 1000px;
+            max-height: 90vh;
+            width: 90%;
+            background-color: var(--celestial);
+            border-radius: 5px;
+            overflow: hidden;
+            position: relative;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .modal.active .modal-content {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--night);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 10;
+            transition: background-color 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background-color: var(--gold);
+        }
+
+        .modal-close::before,
+        .modal-close::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 2px;
+            background-color: var(--text-light);
+        }
+
+        .modal-close::before {
+            transform: rotate(45deg);
+        }
+
+        .modal-close::after {
+            transform: rotate(-45deg);
+        }
+
+        .modal-close:hover::before,
+        .modal-close:hover::after {
+            background-color: var(--night);
+        }
+
+        .modal-image {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+        }
+
+        .modal-info {
+            padding: 2rem;
+        }
+
+        .modal-title {
+            font-family: 'Cinzel', serif;
+            font-size: 2.5rem;
+            color: var(--gold);
+            margin-bottom: 1rem;
+        }
+
+        .modal-subtitle {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+        }
+
+        .modal-text {
+            color: var(--text-light);
+            font-size: 1rem;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: var(--night);
+            padding: 5rem 0 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('/api/placeholder/1920/1080');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.05;
+            mix-blend-mode: luminosity;
+        }
+
+        .footer-container {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer-logo {
+            font-family: 'Cinzel', serif;
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--gold);
+            margin-bottom: 3rem;
+            display: inline-block;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 4rem;
+            margin-bottom: 4rem;
+        }
+
+        .footer-column h3 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            color: var(--gold);
+            margin-bottom: 2rem;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 1rem;
+        }
+
+        .footer-links li a {
+            color: var(--text-light);
+            text-decoration: none;
+            transition: color 0.3s ease;
+            position: relative;
+            display: inline-block;
+        }
+
+        .footer-links li a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background-color: var(--gold);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+
+        .footer-links li a:hover {
+            color: var(--gold);
+        }
+
+        .footer-links li a:hover::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        .footer-newsletter p {
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+        }
+
+        .newsletter-form {
+            display: flex;
+        }
+
+        .newsletter-input {
+            flex: 1;
+            padding: 1rem;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: var(--text-light);
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .newsletter-input:focus {
+            outline: none;
+        }
+
+        .newsletter-submit {
+            padding: 1rem 1.5rem;
+            background-color: var(--gold);
+            border: none;
+            color: var(--night);
+            font-family: 'Cinzel', serif;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .newsletter-submit:hover {
+            background-color: var(--text-light);
+        }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .footer-copyright {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .footer-social a {
+            color: var(--text-light);
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+
+        .footer-social a:hover {
+            color: var(--gold);
+            transform: translateY(-3px);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Media Queries */
+        @media (max-width: 1200px) {
+            .hero-title {
+                font-size: 6rem;
+            }
+            
+            .section-title {
+                font-size: 4rem;
+            }
+            
+            .gods-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .nav-links li a {
+                font-size: 3rem;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .hero-content {
+                padding: 0 4rem;
+            }
+            
+            .hero-title {
+                font-size: 5rem;
+            }
+            
+            .section-title {
+                font-size: 3.5rem;
+            }
+            
+            .section-number {
+                font-size: 8rem;
+                top: -6rem;
+            }
+            
+            .myth-title {
+                font-size: 3rem;
+            }
+            
+            .myth-number {
+                font-size: 10rem;
+                top: -6rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-content {
+                padding: 0 2rem;
+            }
+            
+            .hero-title {
+                font-size: 4rem;
+            }
+            
+            .gods-grid {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+            
+            .nav-links li a {
+                font-size: 2.5rem;
+            }
+            
+            .section-title {
+                font-size: 3rem;
+            }
+            
+            .section-number {
+                font-size: 6rem;
+                top: -4rem;
+                left: -1rem;
+            }
+            
+            .myth-title {
+                font-size: 2.5rem;
+            }
+            
+            .myth-number {
+                font-size: 8rem;
+                top: -5rem;
+                left: -2rem;
+            }
+            
+            .oracle-circle {
+                width: 250px;
+                height: 250px;
+            }
+            
+            .oracle-circle::before {
+                width: 230px;
+                height: 230px;
+            }
+            
+            .oracle-circle::after {
+                width: 210px;
+                height: 210px;
+            }
+            
+            .oracle-eye {
+                width: 80px;
+                height: 80px;
+            }
+            
+            .oracle-eye::before {
+                width: 30px;
+                height: 30px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .hero-title {
+                font-size: 3rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+            
+            .hero-text {
+                font-size: 1rem;
+            }
+            
+            .nav-links li a {
+                font-size: 2rem;
+            }
+            
+            .section-title {
+                font-size: 2.5rem;
+            }
+            
+            .section-number {
+                font-size: 5rem;
+                top: -3rem;
+            }
+            
+            .oracle-circle {
+                width: 200px;
+                height: 200px;
+            }
+            
+            .oracle-circle::before {
+                width: 180px;
+                height: 180px;
+            }
+            
+            .oracle-circle::after {
+                width: 160px;
+                height: 160px;
+            }
+            
+            .oracle-eye {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .oracle-eye::before {
+                width: 25px;
+                height: 25px;
+            }
+            
+            .oracle-response-text {
+                font-size: 1.5rem;
+            }
+            
+            .newsletter-form {
+                flex-direction: column;
+            }
+            
+            .newsletter-input {
+                margin-bottom: 1rem;
+            }
+            
+            .footer-bottom {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Custom Cursor -->
+    <div class="cursor"></div>
+    <div class="cursor-follower"></div>
+
+    <!-- Loader -->
+    <div class="loader">
+        <h1 class="loader-title">
+            <span>O</span>
+            <span>L</span>
+            <span>Y</span>
+            <span>M</span>
+            <span>P</span>
+            <span>U</span>
+            <span>S</span>
+        </h1>
+        <div class="loader-bar-container">
+            <div class="loader-bar" id="loader-bar"></div>
+        </div>
+        <div class="loader-percentage" id="loader-percentage">0%</div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="nav-toggle">
+        <div class="nav-toggle-lines">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
+    
+    <nav class="fullscreen-nav">
+        <ul class="nav-links">
+            <li><a href="#home" data-text="Home">Home</a></li>
+            <li><a href="#gods" data-text="The Gods">The Gods</a></li>
+            <li><a href="#myths" data-text="Epic Tales">Epic Tales</a></li>
+            <li><a href="#oracle" data-text="The Oracle">The Oracle</a></li>
+            <li><a href="#artifacts" data-text="Artifacts">Artifacts</a></li>
+        </ul>
+        <div class="nav-socials">
+            <a href="#" class="nav-social-link">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2.04C6.5 2.04 2 6.53 2 12.06C2 17.06 5.66 21.21 10.44 21.96V14.96H7.9V12.06H10.44V9.85C10.44 7.34 11.93 5.96 14.22 5.96C15.31 5.96 16.45 6.15 16.45 6.15V8.62H15.19C13.95 8.62 13.56 9.39 13.56 10.18V12.06H16.34L15.89 14.96H13.56V21.96A10 10 0 0 0 22 12.06C22 6.53 17.5 2.04 12 2.04Z"/>
+                </svg>
+            </a>
+            <a href="#" class="nav-social-link">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M7.8,2H16.2C19.4,2 22,4.6 22,7.8V16.2A5.8,5.8 0 0,1 16.2,22H7.8C4.6,22 2,19.4 2,16.2V7.8A5.8,5.8 0 0,1 7.8,2M7.6,4A3.6,3.6 0 0,0 4,7.6V16.4C4,18.39 5.61,20 7.6,20H16.4A3.6,3.6 0 0,0 20,16.4V7.6C20,5.61 18.39,4 16.4,4H7.6M17.25,5.5A1.25,1.25 0 0,1 18.5,6.75A1.25,1.25 0 0,1 17.25,8A1.25,1.25 0 0,1 16,6.75A1.25,1.25 0 0,1 17.25,5.5M12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9Z"/>
+                </svg>
+            </a>
+            <a href="#" class="nav-social-link">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M22.46,6C21.69,6.35 20.86,6.58 20,6.69C20.88,6.16 21.56,5.32 21.88,4.31C21.05,4.81 20.13,5.16 19.16,5.36C18.37,4.5 17.26,4 16,4C13.65,4 11.73,5.92 11.73,8.29C11.73,8.63 11.77,8.96 11.84,9.27C8.28,9.09 5.11,7.38 3,4.79C2.63,5.42 2.42,6.16 2.42,6.94C2.42,8.43 3.17,9.75 4.33,10.5C3.62,10.5 2.96,10.3 2.38,10C2.38,10 2.38,10 2.38,10.03C2.38,12.11 3.86,13.85 5.82,14.24C5.46,14.34 5.08,14.39 4.69,14.39C4.42,14.39 4.15,14.36 3.89,14.31C4.43,16 6,17.26 7.89,17.29C6.43,18.45 4.58,19.13 2.56,19.13C2.22,19.13 1.88,19.11 1.54,19.07C3.44,20.29 5.7,21 8.12,21C16,21 20.33,14.46 20.33,8.79C20.33,8.6 20.33,8.42 20.32,8.23C21.16,7.63 21.88,6.87 22.46,6Z"/>
+                </svg>
+            </a>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-bg"></div>
+        <canvas id="hero-canvas"></canvas>
+        <div class="hero-content">
+            <p class="hero-subtitle split-text"><span>Journey into the divine</span></p>
+            <h1 class="hero-title split-text"><span>The Pantheon</span></h1>
+            <div class="hero-text split-text"><span>Embark on an epic journey through ancient Greece, where gods and mortals intertwine in legendary tales of power, wisdom, and fate.</span></div>
+            <a href="#gods" class="hero-button">Discover</a>
+        </div>
+        <div class="scroll-indicator">
+            <p class="scroll-text">Scroll to explore</p>
+            <div class="scroll-line"></div>
+        </div>
+    </section>
+    
+    <!-- Gods Section -->
+    <section class="section" id="gods">
+        <div class="section-inner">
+            <div class="section-header">
+                <div class="section-number">01</div>
+                <h2 class="section-title split-text"><span>The Olympians</span></h2>
+                <p class="section-subtitle split-text"><span>Discover the powerful deities that ruled over the ancient Greek world, each with their own domain and legendary stories.</span></p>
+            </div>
+            <div class="gods-grid">
+                <!-- Zeus Card -->
+                <div class="god-card">
+                    <div class="god-card-inner">
+                        <div class="god-card-front">
+                            <img src="/api/placeholder/600/600" alt="Zeus" class="god-image">
+                        </div>
+                        <div class="god-card-back">
+                            <div class="god-symbol">⚡</div>
+                            <h3 class="god-name">Zeus</h3>
+                            <p class="god-title">King of the Gods</p>
+                            <p class="god-description">Ruler of Mount Olympus and god of the sky, thunder, and lightning. Zeus overthrew his father Cronos to become the supreme ruler of the gods, wielding the thunderbolt as his symbol of power.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Poseidon Card -->
+                <div class="god-card">
+                    <div class="god-card-inner">
+                        <div class="god-card-front">
+                            <img src="/api/placeholder/600/600" alt="Poseidon" class="god-image">
+                        </div>
+                        <div class="god-card-back">
+                            <div class="god-symbol">🔱</div>
+                            <h3 class="god-name">Poseidon</h3>
+                            <p class="god-title">God of the Sea</p>
+                            <p class="god-description">Brother of Zeus and ruler of the seas. With his mighty trident, Poseidon could create storms, earthquakes, and control the waters of the world. Horses were created from the sea foam by his power.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Athena Card -->
+                <div class="god-card">
+                    <div class="god-card-inner">
+                        <div class="god-card-front">
+                            <img src="/api/placeholder/600/600" alt="Athena" class="god-image">
+                        </div>
+                        <div class="god-card-back">
+                            <div class="god-symbol">🦉</div>
+                            <h3 class="god-name">Athena</h3>
+                            <p class="god-title">Goddess of Wisdom</p>
+                            <p class="god-description">Born from Zeus's forehead, Athena is the goddess of wisdom, courage, strategic warfare, and crafts. She is the patron and protector of Athens, represented by the owl and olive tree.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Myths Section -->
+    <section class="section myths-section" id="myths">
+        <div class="section-inner">
+            <div class="section-header">
+                <div class="section-number">02</div>
+                <h2 class="section-title split-text"><span>Epic Tales</span></h2>
+                <p class="section-subtitle split-text"><span>Journey through the legendary stories that have captivated humanity for millennia, filled with heroes, monsters, and divine intervention.</span></p>
+            </div>
+            <div class="myths-slider">
+                <div class="myths-track" id="myths-track">
+                    <!-- Myth Slide 1 -->
+                    <div class="myth-slide">
+                        <div class="myth-content">
+                            <div class="myth-number">01</div>
+                            <div class="myth-image-container">
+                                <img src="/api/placeholder/1200/600" alt="Creation of the World" class="myth-image">
+                            </div>
+                            <h3 class="myth-title">Creation of the World</h3>
+                            <p class="myth-text">In the beginning, there was only Chaos. From this void emerged Gaia (Earth), Tartarus (Underworld), Eros (Love), Erebus (Darkness), and Nyx (Night). Gaia gave birth to Uranus (Sky), and together they produced the Titans, the first generation of Greek gods. The violent ascension of power would begin with their son Cronos, who overthrew his father, only to be later defeated by his own son, Zeus.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Myth Slide 2 -->
+                    <div class="myth-slide">
+                        <div class="myth-content">
+                            <div class="myth-number">02</div>
+                            <div class="myth-image-container">
+                                <img src="/api/placeholder/1200/600" alt="Titanomachy" class="myth-image">
+                            </div>
+                            <h3 class="myth-title">Titanomachy</h3>
+                            <p class="myth-text">Led by Zeus, the Olympian gods waged a ten-year war against the Titans, led by Cronus. The battle shook the cosmos, with lightning bolts hurled across the sky and mountains used as weapons. With the help of the hundred-handed Hecatoncheires and the Cyclopes, who forged Zeus's thunderbolts, the Olympians emerged victorious, casting the Titans into Tartarus and establishing a new divine order.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Myth Slide 3 -->
+                    <div class="myth-slide">
+                        <div class="myth-content">
+                            <div class="myth-number">03</div>
+                            <div class="myth-image-container">
+                                <img src="/api/placeholder/1200/600" alt="Odyssey of Odysseus" class="myth-image">
+                            </div>
+                            <h3 class="myth-title">The Odyssey</h3>
+                            <p class="myth-text">After the Trojan War, the cunning hero Odysseus embarked on a ten-year journey home to Ithaca. His path was fraught with perils: he confronted the one-eyed Cyclops Polyphemus, resisted the enchanting songs of the Sirens, navigated between the monsters Scylla and Charybdis, and faced the wrath of Poseidon. Throughout his trials, Odysseus demonstrated remarkable resilience and intelligence, ultimately returning to reclaim his kingdom.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="myths-nav">
+                    <button class="myth-nav-button myth-nav-prev">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z" />
+                        </svg>
+                        Previous
+                    </button>
+                    <button class="myth-nav-button myth-nav-next">
+                        Next
+                        <svg viewBox="0 0 24 24">
+                            <path d="M4,11V13H16L10.5,18.5L11.92,19.92L19.84,12L11.92,4.08L10.5,5.5L16,11H4Z" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="myth-pagination">
+                    <div class="myth-pagination-bullet active"></div>
+                    <div class="myth-pagination-bullet"></div>
+                    <div class="myth-pagination-bullet"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Oracle Section -->
+    <section class="section oracle-section" id="oracle">
+        <div class="oracle-particles" id="oracle-particles"></div>
+        <div class="section-inner">
+            <div class="section-header">
+                <div class="section-number">03</div>
+                <h2 class="section-title split-text"><span>The Oracle</span></h2>
+                <p class="section-subtitle split-text"><span>Seek wisdom from the divine as the ancient Greeks once did at Delphi. Ask your question and receive guidance from the mythic realm.</span></p>
+            </div>
+            <div class="oracle-container">
+                <div class="oracle-circle">
+                    <div class="oracle-eye" id="oracle-eye"></div>
+                </div>
+                <form class="oracle-form" id="oracle-form">
+                    <input type="text" class="oracle-input" placeholder="What wisdom do you seek from the gods?" required>
+                    <button type="submit" class="oracle-submit">Consult</button>
+                </form>
+                <div class="oracle-response" id="oracle-response"></div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Artifacts Section -->
+    <section class="section artifacts-section" id="artifacts">
+        <div class="section-inner">
+            <div class="section-header">
+                <div class="section-number">04</div>
+                <h2 class="section-title split-text"><span>Divine Artifacts</span></h2>
+                <p class="section-subtitle split-text"><span>Explore legendary objects of immense power, crafted by the gods and wielded by heroes throughout Greek mythology.</span></p>
+            </div>
+            <div class="artifacts-grid">
+                <!-- Artifact 1 -->
+                <div class="artifact-item" data-artifact="1">
+                    <img src="/api/placeholder/600/600" alt="The Golden Fleece" class="artifact-image">
+                    <div class="artifact-overlay">
+                        <h3 class="artifact-name">The Golden Fleece</h3>
+                        <p class="artifact-description">A symbol of authority and kingship, sought by Jason and the Argonauts.</p>
+                        <a href="#" class="artifact-link">Discover the Legend</a>
+                    </div>
+                </div>
+                
+                <!-- Artifact 2 -->
+                <div class="artifact-item" data-artifact="2">
+                    <img src="/api/placeholder/600/600" alt="The Aegis" class="artifact-image">
+                    <div class="artifact-overlay">
+                        <h3 class="artifact-name">The Aegis</h3>
+                        <p class="artifact-description">The shield of Zeus bearing the head of Medusa, later carried by Athena.</p>
+                        <a href="#" class="artifact-link">Discover the Legend</a>
+                    </div>
+                </div>
+                
+                <!-- Artifact 3 -->
+                <div class="artifact-item" data-artifact="3">
+                    <img src="/api/placeholder/600/600" alt="The Trident of Poseidon" class="artifact-image">
+                    <div class="artifact-overlay">
+                        <h3 class="artifact-name">Poseidon's Trident</h3>
+                        <p class="artifact-description">The three-pronged spear that could control the seas and create earthquakes.</p>
+                        <a href="#" class="artifact-link">Discover the Legend</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <a href="#" class="footer-logo">OLYMPUS</a>
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>Navigation</h3>
+                    <ul class="footer-links">
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#gods">The Gods</a></li>
+                        <li><a href="#myths">Epic Tales</a></li>
+                        <li><a href="#oracle">The Oracle</a></li>
+                        <li><a href="#artifacts">Artifacts</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Explore</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">About Greek Mythology</a></li>
+                        <li><a href="#">Heroes & Legends</a></li>
+                        <li><a href="#">Monsters & Creatures</a></li>
+                        <li><a href="#">Sacred Places</a></li>
+                        <li><a href="#">Ancient Greece</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column footer-newsletter">
+                    <h3>Join Our Odyssey</h3>
+                    <p>Subscribe to receive updates on new tales and mythological insights.</p>
+                    <form class="newsletter-form">
+                        <input type="email" class="newsletter-input" placeholder="Your Email" required>
+                        <button type="submit" class="newsletter-submit">Join</button>
+                    </form>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p class="footer-copyright">© 2025 OLYMPUS. A journey through Ancient Greek mythology.</p>
+                <div class="footer-social">
+                    <a href="#">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2.04C6.5 2.04 2 6.53 2 12.06C2 17.06 5.66 21.21 10.44 21.96V14.96H7.9V12.06H10.44V9.85C10.44 7.34 11.93 5.96 14.22 5.96C15.31 5.96 16.45 6.15 16.45 6.15V8.62H15.19C13.95 8.62 13.56 9.39 13.56 10.18V12.06H16.34L15.89 14.96H13.56V21.96A10 10 0 0 0 22 12.06C22 6.53 17.5 2.04 12 2.04Z"/>
+                        </svg>
+                    </a>
+                    <a href="#">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M7.8,2H16.2C19.4,2 22,4.6 22,7.8V16.2A5.8,5.8 0 0,1 16.2,22H7.8C4.6,22 2,19.4 2,16.2V7.8A5.8,5.8 0 0,1 7.8,2M7.6,4A3.6,3.6 0 0,0 4,7.6V16.4C4,18.39 5.61,20 7.6,20H16.4A3.6,3.6 0 0,0 20,16.4V7.6C20,5.61 18.39,4 16.4,4H7.6M17.25,5.5A1.25,1.25 0 0,1 18.5,6.75A1.25,1.25 0 0,1 17.25,8A1.25,1.25 0 0,1 16,6.75A1.25,1.25 0 0,1 17.25,5.5M12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9Z"/>
+                        </svg>
+                    </a>
+                    <a href="#">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M22.46,6C21.69,6.35 20.86,6.58 20,6.69C20.88,6.16 21.56,5.32 21.88,4.31C21.05,4.81 20.13,5.16 19.16,5.36C18.37,4.5 17.26,4 16,4C13.65,4 11.73,5.92 11.73,8.29C11.73,8.63 11.77,8.96 11.84,9.27C8.28,9.09 5.11,7.38 3,4.79C2.63,5.42 2.42,6.16 2.42,6.94C2.42,8.43 3.17,9.75 4.33,10.5C3.62,10.5 2.96,10.3 2.38,10C2.38,10 2.38,10 2.38,10.03C2.38,12.11 3.86,13.85 5.82,14.24C5.46,14.34 5.08,14.39 4.69,14.39C4.42,14.39 4.15,14.36 3.89,14.31C4.43,16 6,17.26 7.89,17.29C6.43,18.45 4.58,19.13 2.56,19.13C2.22,19.13 1.88,19.11 1.54,19.07C3.44,20.29 5.7,21 8.12,21C16,21 20.33,14.46 20.33,8.79C20.33,8.6 20.33,8.42 20.32,8.23C21.16,7.63 21.88,6.87 22.46,6Z"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Modal -->
+    <div class="modal" id="artifact-modal">
+        <div class="modal-content">
+            <div class="modal-close" id="modal-close"></div>
+            <img src="" alt="" class="modal-image" id="modal-image">
+            <div class="modal-info">
+                <h3 class="modal-title" id="modal-title"></h3>
+                <p class="modal-subtitle" id="modal-subtitle"></p>
+                <div class="modal-text" id="modal-text"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // =========== Loader Animation ===========
+        document.addEventListener('DOMContentLoaded', () => {
+            const loader = document.querySelector('.loader');
+            const loaderBar = document.getElementById('loader-bar');
+            const loaderPercentage = document.getElementById('loader-percentage');
+            
+            // Simulate loading progress
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 10;
+                if (progress > 100) progress = 100;
+                
+                loaderBar.style.width = `${progress}%`;
+                loaderPercentage.textContent = `${Math.floor(progress)}%`;
+                
+                if (progress === 100) {
+                    clearInterval(interval);
+                    
+                    // Hide loader after a short delay
+                    setTimeout(() => {
+                        loader.classList.add('hidden');
+                        // Initialize animations
+                        initHeroAnimation();
+                        initScrollAnimations();
+                        setTimeout(() => {
+                            document.querySelector('.hero-content').classList.add('visible');
+                        }, 500);
+                    }, 1000);
+                }
+            }, 150);
+            
+            // Add animation delay to loader title
+            const titleSpans = document.querySelectorAll('.loader-title span');
+            titleSpans.forEach((span, index) => {
+                span.style.animationDelay = `${index * 0.1}s`;
+            });
+            
+            // Initialize Custom Cursor
+            initCustomCursor();
+            
+            // Initialize Navigation
+            initNavigation();
+            
+            // Initialize Myths Slider
+            initMythsSlider();
+            
+            // Initialize Oracle
+            initOracle();
+            
+            // Initialize Artifacts Modal
+            initArtifactsModal();
+        });
+        
+        // =========== Custom Cursor ===========
+        function initCustomCursor() {
+            const cursor = document.querySelector('.cursor');
+            const cursorFollower = document.querySelector('.cursor-follower');
+            
+            document.addEventListener('mousemove', (e) => {
+                cursor.style.left = e.clientX + 'px';
+                cursor.style.top = e.clientY + 'px';
+                
+                // Add slight delay to follower for smoother effect
+                setTimeout(() => {
+                    cursorFollower.style.left = e.clientX + 'px';
+                    cursorFollower.style.top = e.clientY + 'px';
+                }, 50);
+            });
+            
+            // Add cursor grow effect on clickable elements
+            const clickables = document.querySelectorAll('a, button, .god-card, .artifact-item, .myth-pagination-bullet');
+            clickables.forEach(element => {
+                element.addEventListener('mouseenter', () => {
+                    cursor.classList.add('cursor-grow');
+                    cursorFollower.classList.add('follower-grow');
+                });
+                
+                element.addEventListener('mouseleave', () => {
+                    cursor.classList.remove('cursor-grow');
+                    cursorFollower.classList.remove('follower-grow');
+                });
+            });
+        }
+        
+        // =========== Navigation ===========
+        function initNavigation() {
+            const navToggle = document.querySelector('.nav-toggle');
+            const body = document.body;
+            const navLinks = document.querySelectorAll('.nav-links li a');
+            
+            navToggle.addEventListener('click', () => {
+                body.classList.toggle('nav-active');
+            });
+            
+            // Close navigation when clicking on a link
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    body.classList.remove('nav-active');
+                    
+                    // Add delay to link animation
+                    const index = Array.from(navLinks).indexOf(link);
+                    link.style.transitionDelay = `${0.1 * index}s`;
+                });
+            });
+            
+            // Add delay to nav links on open
+            navLinks.forEach((link, index) => {
+                link.style.transitionDelay = `${0.1 * index}s`;
+            });
+        }
+        
+        // =========== Hero Animation ===========
+        function initHeroAnimation() {
+            const canvas = document.getElementById('hero-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            // Create particles
+            const particles = [];
+            const particleCount = 100;
+            
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.size = Math.random() * 3 + 1;
+                    this.speedX = (Math.random() - 0.5) * 0.5;
+                    this.speedY = (Math.random() - 0.5) * 0.5;
+                    this.color = `rgba(212, 175, 55, ${Math.random() * 0.5 + 0.2})`;
+                }
+                
+                update() {
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+                    
+                    // Wrap around screen
+                    if (this.x < 0) this.x = canvas.width;
+                    if (this.x > canvas.width) this.x = 0;
+                    if (this.y < 0) this.y = canvas.height;
+                    if (this.y > canvas.height) this.y = 0;
+                }
+                
+                draw() {
+                    ctx.fillStyle = this.color;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+            
+            function init() {
+                for (let i = 0; i < particleCount; i++) {
+                    particles.push(new Particle());
+                }
+            }
+            
+            function connectParticles() {
+                for (let i = 0; i < particles.length; i++) {
+                    for (let j = i; j < particles.length; j++) {
+                        const dx = particles[i].x - particles[j].x;
+                        const dy = particles[i].y - particles[j].y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < 150) {
+                            ctx.beginPath();
+                            ctx.strokeStyle = `rgba(212, 175, 55, ${0.1 * (1 - distance / 150)})`;
+                            ctx.lineWidth = 0.5;
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+            }
+            
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                for (let i = 0; i < particles.length; i++) {
+                    particles[i].update();
+                    particles[i].draw();
+                }
+                
+                connectParticles();
+                requestAnimationFrame(animate);
+            }
+            
+            init();
+            animate();
+            
+            // Resize canvas on window resize
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            });
+            
+            // Add text splitting for hero content
+            const heroTexts = document.querySelectorAll('.hero-content .split-text span');
+            heroTexts.forEach((text, index) => {
+                text.style.transitionDelay = `${0.3 + index * 0.2}s`;
+            });
+        }
+        
+        // =========== Scroll Animations ===========
+        function initScrollAnimations() {
+            const sections = document.querySelectorAll('.section');
+            const options = {
+                threshold: 0.3,
+                rootMargin: "0px 0px -100px 0px"
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        
+                        // Add staggered animation to split text
+                        const splitTexts = entry.target.querySelectorAll('.split-text span');
+                        splitTexts.forEach((text, index) => {
+                            text.style.transitionDelay = `${0.3 + index * 0.1}s`;
+                        });
+                    }
+                });
+            }, options);
+            
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+            
+            // Split text into spans
+            const splitTextElements = document.querySelectorAll('.split-text');
+            splitTextElements.forEach(element => {
+                const text = element.textContent;
+                element.innerHTML = `<span>${text}</span>`;
+            });
+        }
+        
+        // =========== Myths Slider ===========
+        function initMythsSlider() {
+            const track = document.getElementById('myths-track');
+            const slides = document.querySelectorAll('.myth-slide');
+            const prevButton = document.querySelector('.myth-nav-prev');
+            const nextButton = document.querySelector('.myth-nav-next');
+            const pagination = document.querySelectorAll('.myth-pagination-bullet');
+            
+            let currentIndex = 0;
+            
+            function goToSlide(index) {
+                if (index < 0) index = slides.length - 1;
+                if (index >= slides.length) index = 0;
+                
+                currentIndex = index;
+                track.style.transform = `translateX(-${currentIndex * 100}%)`;
+                
+                // Update pagination
+                pagination.forEach((bullet, i) => {
+                    bullet.classList.toggle('active', i === currentIndex);
+                });
+            }
+            
+            prevButton.addEventListener('click', () => {
+                goToSlide(currentIndex - 1);
+            });
+            
+            nextButton.addEventListener('click', () => {
+                goToSlide(currentIndex + 1);
+            });
+            
+            // Add pagination functionality
+            pagination.forEach((bullet, index) => {
+                bullet.addEventListener('click', () => {
+                    goToSlide(index);
+                });
+            });
+            
+            // Auto slide every 10 seconds
+            setInterval(() => {
+                goToSlide(currentIndex + 1);
+            }, 10000);
+        }
+        
+        // =========== Oracle ===========
+        function initOracle() {
+            const oracleForm = document.getElementById('oracle-form');
+            const oracleResponse = document.getElementById('oracle-response');
+            const oracleEye = document.getElementById('oracle-eye');
+            const oracleParticles = document.getElementById('oracle-particles');
+            
+            // Create oracle particles
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Random position
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                
+                // Random animation
+                const duration = Math.random() * 20 + 10;
+                const delay = Math.random() * 10;
+                
+                particle.style.animation = `
+                    particleFloat ${duration}s ${delay}s infinite ease-in-out,
+                    particleFade ${duration / 2}s ${delay}s infinite alternate ease-in-out
+                `;
+                
+                oracleParticles.appendChild(particle);
+            }
+            
+            // Oracle responses
+            const responses = [
+                { text: "The path you seek lies beyond the mountains of doubt.", author: "Oracle of Delphi" },
+                { text: "Trust in the wisdom of Athena to guide your decisions.", author: "Oracle of Delphi" },
+                { text: "Like Odysseus, you must navigate through the storms to find your way home.", author: "Oracle of Delphi" },
+                { text: "The threads of fate are woven by the Moirai, but how you wear the garment is your choice.", author: "Oracle of Delphi" },
+                { text: "Look to the stars for guidance, as the ancient heroes once did.", author: "Oracle of Delphi" },
+                { text: "Poseidon's waters may be turbulent, but they will carry you to new shores.", author: "Oracle of Delphi" },
+                { text: "Heed the lessons of Icarus - ambition must be tempered with wisdom.", author: "Oracle of Delphi" },
+                { text: "The Oracle sees success in your future, if you approach with both courage and caution.", author: "Oracle of Delphi" },
+                { text: "Even Heracles faced twelve labors before achieving greatness. Perseverance is key.", author: "Oracle of Delphi" },
+                { text: "The wisdom you seek already resides within you, like Athena from Zeus's head.", author: "Oracle of Delphi" }
+            ];
+            
+            oracleForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const input = oracleForm.querySelector('.oracle-input');
+                
+                if (input.value.trim()) {
+                    // Animate oracle eye
+                    oracleEye.style.animation = 'oraclePulse 2s';
+                    
+                    // Clear previous response
+                    oracleResponse.innerHTML = '';
+                    oracleResponse.classList.remove('active');
+                    
+                    // Select random response
+                    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                    
+                    // Delay response for dramatic effect
+                    setTimeout(() => {
+                        // Create response element
+                        const responseText = document.createElement('p');
+                        responseText.classList.add('oracle-response-text');
+                        responseText.textContent = randomResponse.text;
+                        
+                        const responseAuthor = document.createElement('p');
+                        responseAuthor.classList.add('oracle-response-author');
+                        responseAuthor.textContent = randomResponse.author;
+                        
+                        oracleResponse.appendChild(responseText);
+                        oracleResponse.appendChild(responseAuthor);
+                        oracleResponse.classList.add('active');
+                        
+                        // Reset eye animation
+                        setTimeout(() => {
+                            oracleEye.style.animation = '';
+                        }, 2000);
+                    }, 1500);
+                    
+                    // Clear input
+                    input.value = '';
+                }
+            });
+            
+            // Add keyframe animation for oracle eye
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes oraclePulse {
+                    0% { box-shadow: 0 0 30px var(--gold); }
+                    50% { box-shadow: 0 0 60px var(--gold); }
+                    100% { box-shadow: 0 0 30px var(--gold); }
+                }
+                
+                @keyframes particleFloat {
+                    0% { transform: translate(0, 0); }
+                    50% { transform: translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 - 50}px); }
+                    100% { transform: translate(0, 0); }
+                }
+                
+                @keyframes particleFade {
+                    0% { opacity: 0.2; }
+                    100% { opacity: 0.7; }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        // =========== Artifacts Modal ===========
+        function initArtifactsModal() {
+            const artifactItems = document.querySelectorAll('.artifact-item');
+            const modal = document.getElementById('artifact-modal');
+            const modalClose = document.getElementById('modal-close');
+            const modalImage = document.getElementById('modal-image');
+            const modalTitle = document.getElementById('modal-title');
+            const modalSubtitle = document.getElementById('modal-subtitle');
+            const modalText = document.getElementById('modal-text');
+            
+            // Artifact data
+            const artifacts = [
+                {
+                    id: 1,
+                    title: "The Golden Fleece",
+                    subtitle: "Symbol of Authority and Kingship",
+                    image: "/api/placeholder/1200/600",
+                    text: "<p>The Golden Fleece was the fleece of the golden-woolled, winged ram Chrysomallos, a creature created by Poseidon. It was sacrificed to Zeus and its golden fleece was hung from a tree in Colchis, guarded by a never-sleeping dragon.</p><p>The hero Jason, along with his crew of Argonauts, embarked on a quest to retrieve the fleece in order to place him rightfully on the throne of Iolcos. With the help of the sorceress Medea, Jason stole the fleece and escaped with the Argonauts. The Golden Fleece symbolizes authority, kingship, and the quest for something precious and divine.</p>"
+                },
+                {
+                    id: 2,
+                    title: "The Aegis",
+                    subtitle: "Divine Shield of Protection",
+                    image: "/api/placeholder/1200/600",
+                    text: "<p>The Aegis was a shield carried primarily by Zeus and later by his daughter Athena. It was fashioned by the Cyclopes or by Hephaestus, adorned with the fearsome head of Medusa, capable of turning onlookers to stone.</p><p>In its original form, the Aegis may have been a goatskin worn by Zeus as a sign of the stormy weather he could summon. When wielded in battle, it produced a terrifying sound and was said to control the elements. As a symbol, the Aegis represents divine protection and the power to instill fear in one's enemies.</p>"
+                },
+                {
+                    id: 3,
+                    title: "Poseidon's Trident",
+                    subtitle: "Master Weapon of the Seas",
+                    image: "/api/placeholder/1200/600",
+                    text: "<p>The Trident of Poseidon is a three-pronged spear that served as the symbol of power for the god of the seas. Crafted by the Cyclopes, it granted Poseidon dominion over the waters and the ability to create powerful earthquakes by striking the ground.</p><p>With his trident, Poseidon could create storms, summon or calm the waves, and even crack the earth itself. According to some myths, he used it to create the first horse by striking the ground. The Trident symbolizes Poseidon's authority and the untamed, powerful nature of the sea.</p>"
+                }
+            ];
+            
+            // Open modal when clicking on artifact
+            artifactItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const artifactId = parseInt(item.getAttribute('data-artifact'));
+                    const artifact = artifacts.find(a => a.id === artifactId);
+                    
+                    if (artifact) {
+                        modalImage.src = artifact.image;
+                        modalImage.alt = artifact.title;
+                        modalTitle.textContent = artifact.title;
+                        modalSubtitle.textContent = artifact.subtitle;
+                        modalText.innerHTML = artifact.text;
+                        
+                        modal.classList.add('active');
+                        document.body.style.overflow = 'hidden';
+                    }
+                });
+            });
+            
+            // Close modal
+            modalClose.addEventListener('click', () => {
+                modal.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+            
+            // Close modal when clicking outside content
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            });
+        }
+        
+        // Add smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
